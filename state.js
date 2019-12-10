@@ -1,3 +1,5 @@
+const updateStateEvent = new Event("updateState");
+
 function useState(target) {
   let state = new Proxy(target, {
     set: function(target, property, value) {
@@ -17,15 +19,18 @@ function useState(target) {
   return [state, setter];
 }
 
+function useEffect(callback = () => {}, observableState) {
+  document.addEventListener("updateState", (e) => {
+    console.log(e);
+    callback();
+  });
+}
+
 const [state, setState] = useState({ xy: 25, x: 5, y: 5 });
 const [stateNull, setStateNull] = useState({});
 
-const updateStateEvent = new Event("updateState");
+useEffect(() => {
+  console.log("Test");
+}, state);
 
-document.addEventListener("updateState", (e) => {
-  console.log(e);
-});
-
-console.log(state, stateNull);
 setState({ x: 10, z: 5, o: "Test" });
-console.log(state, stateNull);
